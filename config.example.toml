@@ -1,0 +1,131 @@
+# =============================================================================
+# Configuración de Bugsito (antes Jarvis) — Asistente de Voz Interactivo
+# =============================================================================
+# Ubicación por defecto: ~/.config/bugsito/config.toml
+
+[general]
+name = "Bugsito"
+wake_words = ["bugsito", "jarvis"]
+language = "es"
+timeout_seconds = 12
+
+[ui]
+# Posición del reactor de energía en pantalla (Wayland LayerShell o ventana flotante)
+anchor_bottom = true
+anchor_right = true
+margin_bottom = 55
+margin_right = 35
+width = 260
+height = 260
+font_family = "JetBrainsMono Nerd Font"
+
+[theme]
+# Integración nativa con dotfiles: si `env_file` existe, lee ACENTO, SECUNDARIO e INFO en vivo.
+# En otras PCs donde no exista ese archivo, utiliza los colores hexadecimales de respaldo.
+env_file = "~/dotfiles/tema/tema.conf"
+accent = "#a77bf3"
+secondary = "#7ee08f"
+info = "#8fd3f4"
+
+[audio]
+# STT (Speech-to-Text) con whisper.cpp local
+whisper_model_dir = "~/.local/share/whisper"
+whisper_model_name = "ggml-base.bin"
+whisper_model_url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin"
+whisper_prompt = "Bugsito, Jarvis, Hermes, terminal, proyecto, git, dotfiles, código, abre, ejecuta, corre, cursor"
+
+# TTS (Text-to-Speech):
+# Si `external_tts_cmd` existe (ej. en dotfiles), lo usa para hablar con la misma voz del sistema.
+# Si no existe (en otra PC), usa el motor Piper TTS / espeak-ng integrado en Bugsito.
+external_tts_cmd = "~/dotfiles/utils/voz.sh --silencio"
+piper_model_dir = "~/.local/share/piper"
+piper_default_voice = "es_MX-claude-high"
+espeak_voice = "es-419"
+
+[workspace]
+# Directorios donde Bugsito busca proyectos al decir "abre el proyecto <nombre>"
+projects_dirs = ["~/Proyectos", "~/Proyectos/personal", "~/dotfiles"]
+default_editor = "cursor"
+terminal = "kitty"
+browser = "flatpak run app.zen_browser.zen"
+file_manager = "thunar"
+lock_command = "hyprlock"
+
+# =============================================================================
+# Configuración de LLMs con Genkit (Modo Local por IP o Modo por Token)
+# =============================================================================
+[llm]
+# mode:
+#   "local" -> Prioriza proveedores locales por IP (Ollama / vLLM / LM Studio)
+#   "token" -> Prioriza proveedores en la nube mediante API Token (Gemini, OpenAI, Groq, etc.)
+#   "auto"  -> Usa `active_profile` y si falla recorre `fallback_order`
+mode = "auto"
+active_profile = "mac-ollama"
+fallback_order = ["mac-ollama", "gemini", "openai", "groq", "local-ollama"]
+
+# Si `use_genkit_server = true` y el servicio Genkit está activo (o se invoca vía CLI bridge),
+# las llamadas se ejecutan a través del flujo Genkit (`bugsitoVoiceFlow`).
+use_genkit_server = true
+genkit_server_url = "http://127.0.0.1:3400"
+
+system_prompt = """Eres Bugsito, el asistente de voz inteligente del sistema NixOS. \
+Responde siempre en español de forma natural, concisa y directa (máximo 1 o 2 oraciones breves). \
+Sin texto de relleno, sin markdown ni listas, optimizado para ser leído en voz alta por TTS."""
+
+# --- Perfiles de LLM disponibles ---
+
+[llm.profiles.mac-ollama]
+type = "local"
+provider = "ollama"
+# Si host es "auto", Bugsito toma BUGSITO_OLLAMA_HOST o extrae la IP de CONTEXT_HUB_URL en ~/dotfiles/.env
+host = "auto"
+port = 11434
+model = "llama3.1:8b"
+timeout = 8
+
+[llm.profiles.local-ollama]
+type = "local"
+provider = "ollama"
+host = "http://127.0.0.1"
+port = 11434
+model = "llama3.1:8b"
+timeout = 8
+
+[llm.profiles.gemini]
+type = "token"
+provider = "googleai"
+model = "gemini-2.5-flash"
+api_key_env = "GEMINI_API_KEY"
+timeout = 10
+
+[llm.profiles.openai]
+type = "token"
+provider = "openai"
+base_url = "https://api.openai.com/v1"
+model = "gpt-4o-mini"
+api_key_env = "OPENAI_API_KEY"
+timeout = 10
+
+[llm.profiles.groq]
+type = "token"
+provider = "openai-compatible"
+base_url = "https://api.groq.com/openai/v1"
+model = "llama-3.3-70b-versatile"
+api_key_env = "GROQ_API_KEY"
+timeout = 8
+
+[llm.profiles.deepseek]
+type = "token"
+provider = "openai-compatible"
+base_url = "https://api.deepseek.com/v1"
+model = "deepseek-chat"
+api_key_env = "DEEPSEEK_API_KEY"
+timeout = 10
+
+# --- Comandos personalizados adicionales ---
+[skills.custom]
+# Formato: "frase clave" = { cmd = "comando a ejecutar", response = "respuesta hablada" }
+"hermes" = { cmd = "kitty --class hermes-agent -e hermes", response = "Iniciando Hermes Agent." }
+"claude" = { cmd = "kitty -e claude", response = "Iniciando Claude Code." }
+"antigravity" = { cmd = "kitty -e agy", response = "Iniciando Antigravity." }
+"lazydocker" = { cmd = "kitty --class lazydocker -e lazydocker", response = "Abriendo Lazydocker." }

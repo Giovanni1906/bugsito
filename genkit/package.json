@@ -1,0 +1,26 @@
+{
+  "name": "bugsito-genkit",
+  "version": "1.0.0",
+  "description": "Motor de flujos Genkit para Bugsito (soporte multi-LLM: modo local por IP con Ollama y modo por Token con Gemini/OpenAI/Groq/DeepSeek)",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "tsx src/index.ts --serve",
+    "genkit:ui": "genkit start -- tsx src/index.ts --serve",
+    "ask": "tsx src/index.ts --ask"
+  },
+  "dependencies": {
+    "@genkit-ai/googleai": "^1.0.0",
+    "genkit": "^1.0.0",
+    "genkitx-ollama": "^1.0.0",
+    "genkitx-openai": "^1.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "genkit-cli": "^1.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

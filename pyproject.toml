@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bugsito"
+version = "1.0.0"
+description = "Asistente de voz interactivo para Linux / Wayland (NixOS / Hyprland) con reactor de energía GTKLayerShell y motor Multi-LLM con Firebase Genkit."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Giovanni1906" }]
+dependencies = [
+    "pycairo>=1.25.0",
+    "PyGObject>=3.46.0",
+]
+
+[project.scripts]
+bugsito = "bugsito.cli:main"
+jarvis = "bugsito.cli:main"
